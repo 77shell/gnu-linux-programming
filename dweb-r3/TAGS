@@ -1,0 +1,46 @@
+
+http.h,387
+#define _HTTP_H_2,17
+struct http_operations 4,35
+   int (*open)open5,60
+   int (*read)read6,102
+   int (*write)write7,152
+   void (*close)close8,210
+   void *priv;priv9,254
+#define MAX_OPS 12,273
+#define SOCKET_OPS 13,291
+#define FILE_OPS 14,312
+struct http_data_t 16,332
+    struct http_operatons *fops;fops17,353
+static struct http_data_t http_data[http_data20,390
+
+socket.c,241
+#define CR 19,323
+#define LF 20,339
+#define MAX 22,356
+int socket_listen(25,401
+int http_write(55,1050
+int http_read(63,1239
+int http_open(93,1695
+void http_close(126,2452
+struct http_operations http_ops 144,2815
+int main(152,2931
+
+socket.h,130
+#define _SOCKET_H_2,19
+#define PORT 4,39
+struct socket_data 6,58
+	int sockfd;7,79
+	int client_sockfd;8,92
+   	int len;9,112
+
+http.c,265
+#define CR 18,303
+#define LF 19,319
+#define MAX 21,336
+static int http_get;23,354
+static struct http_operations *http_ops[http_ops24,375
+static int http_parser(26,426
+void pipe_read(38,599
+static void *http_main(http_main47,833
+int http_register(96,1713

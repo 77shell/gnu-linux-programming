@@ -1,0 +1,4 @@
+file dweb
+set follow-fork-mode child
+b socket.c:26
+show follow-fork-mode

@@ -3,7 +3,7 @@
 
 struct http_operations {
    int (*open)(struct http_operations *);
-   int (*read)(struct http_operations *, char *);
+   int (*read)(int fd, char *);
    int (*write)(struct http_operations *, char *, int n);
    void (*close)(struct http_operations *);
    void *priv;

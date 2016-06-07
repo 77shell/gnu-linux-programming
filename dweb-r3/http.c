@@ -18,17 +18,15 @@
 #define CR '\r'
 #define LF '\n'
 
-#define MAX 4096
-
-static int http_get;
 static struct http_operations *http_ops[MAX_OPS];
 
-static int http_parser(char *s)
+
+int http_parser(char *s, int *http_get)
 {
     if (s[0] == CR && s[1] == LF)
 	return -1;
     else if (strncmp(s, "GET", 3) == 0)
-	http_get = 1;
+        *http_get = 1;
     return 0;
 }
 
@@ -44,52 +42,38 @@ void pipe_read(FILE *stream, struct http_operations *ops)
 	   ops->write(ops, buffer, strlen(buffer));
 }
 
-static void *http_main(int n)
+
+static void* http_main(int n)
 {
-	struct http_operations *ops;
-	char buf[MAX];
-	int ret;
-	int fds[2];	
-	FILE *stream;
+    struct http_operations *ops;
+    int c;
+    char *quit_msg = "Press 'q' to quit~";
 
-	ops = (struct http_operations *)http_data[n].fops;
+    ops = (struct http_operations *)http_data[n].fops;
 
-	/* blocking open */
-	printf("ops->open\n");
-	if (ops == NULL)
-	   printf("ops = NULL\n");
-	if (ops->open) {
-	   ops->open(ops);
-	} else {
-	   printf("ops->open = NULL\n");
-	}
-	printf("exit ops->open\n");
+    /* blocking open */
+    printf("ops->open\n");
+    if (ops == NULL)
+        printf("ops = NULL\n");
+    if (ops->open) {
+	ops->open(ops);
+    } else {
+	printf("ops->open = NULL\n");
+    }
 
-	/*
-	 * Create pipes. Close input pipe. Read output pipe.
- 	 */
-	pipe(fds);
-	close(fds[0]);
-
-        while (1) {
-	   printf("ops->read\n");
-	   ret = ops->read(ops, buf);
-	   printf("client: %s [%d]\n", buf, ret);
-           http_parser(buf);
-	   if (buf[0] == CR && buf[1] == LF)
-	      break;
-	}
-
-	if (http_get) {
-	   dup2(fds[1], 1);
-           stream = fdopen(fds[1], "r");
-           pipe_read(stream, ops);
-	}
-
-	printf("ops->close\n");
-	ops->close(ops);
-
-	return NULL;
+    printf("%s\n", quit_msg);
+    while (c = getchar()) {
+        if (c == 'q')
+		break;
+	else
+		printf("%s\n", quit_msg);
+	
+	sleep(1);
+    }
+	
+    printf("exit http_main\n");
+    ops->close(ops);
+    return NULL;
 }
 
 /* API implementation */
